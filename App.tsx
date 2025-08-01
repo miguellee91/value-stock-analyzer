@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'; // useEffect 추가
+import React, { useState, useCallback, useEffect } from 'react';
 import type { StockAnalysis, ChatMessage, AnalysisSection, ScoreDetail } from './types';
 import { InvestmentGrade } from './types';
 import { analyzeStock, startChat, sendMessage } from './services/geminiService';
@@ -7,7 +7,7 @@ import AnalysisResult from './components/AnalysisResult';
 import Chat from './components/Chat';
 import type { Chat as GeminiChat } from '@google/genai';
 import { LineChart, Briefcase, MessagesSquare } from 'lucide-react';
-import netlifyIdentity from 'netlify-identity-widget'; // netlifyIdentity import
+// import netlifyIdentity from 'netlify-identity-widget'; // 이 줄을 제거합니다.
 
 const validateAndCalculateAnalysis = (data: Partial<StockAnalysis>): StockAnalysis => {
   const safeData: StockAnalysis = {
@@ -67,43 +67,49 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // 위젯 초기화
-    netlifyIdentity.init();
+    if (window.netlifyIdentity) { // window.netlifyIdentity 사용
+      window.netlifyIdentity.init();
 
-    // 사용자 로그인/로그아웃 이벤트 리스너
-    netlifyIdentity.on('init', (currentUser) => {
-      console.log('init', currentUser);
-      setUser(currentUser);
-    });
-    netlifyIdentity.on('login', (currentUser) => {
-      console.log('login', currentUser);
-      setUser(currentUser);
-      netlifyIdentity.close(); // 로그인 성공 후 위젯 닫기
-    });
-    netlifyIdentity.on('logout', () => {
-      console.log('logout');
-      setUser(null);
-    });
-    netlifyIdentity.on('error', (err) => console.error('Error', err));
-    netlifyIdentity.on('open', () => console.log('Widget opened'));
-    netlifyIdentity.on('close', () => console.log('Widget closed'));
+      // 사용자 로그인/로그아웃 이벤트 리스너
+      window.netlifyIdentity.on('init', (currentUser: any) => {
+        console.log('init', currentUser);
+        setUser(currentUser);
+      });
+      window.netlifyIdentity.on('login', (currentUser: any) => {
+        console.log('login', currentUser);
+        setUser(currentUser);
+        window.netlifyIdentity.close(); // 로그인 성공 후 위젯 닫기
+      });
+      window.netlifyIdentity.on('logout', () => {
+        console.log('logout');
+        setUser(null);
+      });
+      window.netlifyIdentity.on('error', (err: any) => console.error('Error', err));
+      window.netlifyIdentity.on('open', () => console.log('Widget opened'));
+      window.netlifyIdentity.on('close', () => console.log('Widget closed'));
 
-    // 컴포넌트 언마운트 시 이벤트 리스너 정리
-    return () => {
-      netlifyIdentity.off('init');
-      netlifyIdentity.off('login');
-      netlifyIdentity.off('logout');
-      netlifyIdentity.off('error');
-      netlifyIdentity.off('open');
-      netlifyIdentity.off('close');
-    };
+      // 컴포넌트 언마운트 시 이벤트 리스너 정리
+      return () => {
+        window.netlifyIdentity.off('init');
+        window.netlifyIdentity.off('login');
+        window.netlifyIdentity.off('logout');
+        window.netlifyIdentity.off('error');
+        window.netlifyIdentity.off('open');
+        window.netlifyIdentity.off('close');
+      };
+    }
   }, []);
 
   const handleLogin = () => {
-    netlifyIdentity.open(); // 로그인/회원가입 위젯 열기
+    if (window.netlifyIdentity) { // window.netlifyIdentity 사용
+      window.netlifyIdentity.open(); // 로그인/회원가입 위젯 열기
+    }
   };
 
   const handleLogout = () => {
-    netlifyIdentity.logout(); // 로그아웃
+    if (window.netlifyIdentity) { // window.netlifyIdentity 사용
+      window.netlifyIdentity.logout(); // 로그아웃
+    }
   };
 
   const handleAnalyze = useCallback(async () => {
@@ -184,7 +190,7 @@ const App: React.FC = () => {
             <LineChart className="w-8 h-8 text-blue-600" />
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">가치주 분석기</h1>
           </div>
-          <div className="flex items-center space-x-4"> {/* 로그인/로그아웃 버튼을 위한 div 추가 */}
+          <div className="flex items-center space-x-4">
             {user ? (
               <>
                 <span className="text-gray-700">안녕하세요, {user.user_metadata?.full_name || user.email}님!</span>
@@ -217,7 +223,6 @@ const App: React.FC = () => {
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {user ? (
-          // 로그인한 사용자에게만 보여줄 내용
           <div className="max-w-4xl mx-auto">
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
               <div className="flex items-center gap-4">
@@ -277,7 +282,6 @@ const App: React.FC = () => {
             )}
           </div>
         ) : (
-          // 로그인하지 않은 사용자에게 보여줄 내용
           <div className="max-w-md mx-auto text-center p-8 bg-white rounded-xl shadow-md border border-gray-200">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">로그인이 필요합니다</h2>
             <p className="text-gray-600 mb-6">주식 분석 기능을 사용하려면 로그인하거나 회원가입을 해주세요.</p>

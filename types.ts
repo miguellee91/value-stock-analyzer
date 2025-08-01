@@ -57,3 +57,10 @@ export interface ChatMessage {
     role: 'user' | 'model';
     text: string;
 }
+
+// netlifyIdentity를 전역 Window 객체에 추가하기 위한 타입 선언
+declare global {
+  interface Window {
+    netlifyIdentity: any; // netlify-identity-widget의 타입 정의가 복잡하므로 일단 any로 설정
+  }
+}
