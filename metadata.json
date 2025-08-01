@@ -1,0 +1,6 @@
+{
+  "name": "Value Stock Analyzer",
+  "description": "An application for long-term investors to analyze undervalued stocks. Users can input a company name to receive an analysis based on profitability, shareholder returns, and growth potential, complete with a final investment grade and detailed commentary.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
