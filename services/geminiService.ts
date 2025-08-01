@@ -1,11 +1,12 @@
 import { GoogleGenAI, Chat, HarmCategory, HarmBlockThreshold } from "@google/genai";
 import type { StockAnalysis, Source } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
+// process.env.API_KEY 대신 process.env.VITE_GEMINI_API_KEY 사용
+if (!process.env.VITE_GEMINI_API_KEY) {
+    throw new Error("VITE_GEMINI_API_KEY environment variable not set");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY }); // API_KEY 변경
 
 const systemInstruction = `You are a professional stock analyst providing long-term value investment analysis.
 
