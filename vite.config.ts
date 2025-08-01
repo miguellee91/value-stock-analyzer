@@ -12,6 +12,11 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      }
+      },
+      build: { // 이 부분을 추가합니다.
+        rollupOptions: {
+          external: ['netlify-identity-widget'], // netlify-identity-widget을 외부 모듈로 처리
+        },
+      },
     };
 });
